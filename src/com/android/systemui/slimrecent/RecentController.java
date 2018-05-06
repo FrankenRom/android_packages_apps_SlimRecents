@@ -119,6 +119,8 @@ public class RecentController implements RecentPanelView.OnExitListener,
     private WindowManager mWindowManager;
     private IWindowManager mWindowManagerService;
 
+    private CacheMoreCardsLayoutManager mLayoutManager;
+
     private boolean mIsShowing;
     private boolean mIsToggled;
     private boolean mIsPreloaded;
@@ -563,6 +565,10 @@ public class RecentController implements RecentPanelView.OnExitListener,
         return mIsShowing;
     }
 
+    public void scrollPanel(boolean down) {
+        mRecentPanelView.scrollPanel(down);
+    }
+
     @Override
     public void hideRecentApps(boolean triggeredFromAltTab,
             boolean triggeredFromHomeKey) {
@@ -710,10 +716,10 @@ public class RecentController implements RecentPanelView.OnExitListener,
                         resolver, Settings.System.RECENT_PANEL_EXPANDED_MODE,
                         RecentPanelView.EXPANDED_MODE_NEVER,
                         UserHandle.USER_CURRENT);
-            CacheMoreCardsLayoutManager llm =
+            mLayoutManager =
                     new CacheMoreCardsLayoutManager(mContext, mWindowManager, expandMode);
-            llm.setReverseLayout(true);
-            mCardRecyclerView.setLayoutManager(llm);
+            mLayoutManager.setReverseLayout(true);
+            mCardRecyclerView.setLayoutManager(mLayoutManager);
 
             // Get user gravity.
             mUserGravity = Settings.System.getIntForUser(
@@ -795,6 +801,10 @@ public class RecentController implements RecentPanelView.OnExitListener,
             // before the user shows it again.
             preloadRecentApps();
         }
+    }
+
+    public LinearLayoutManager getLayoutManager() {
+        return (LinearLayoutManager) mLayoutManager;
     }
 
     public boolean onConfigurationChanged(Configuration newConfig) {
